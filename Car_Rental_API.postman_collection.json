@@ -1,0 +1,410 @@
+{
+  "info": {
+    "name": "Car Rental Management API",
+    "description": "Complete API collection for testing the Car Rental backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "API Root Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": [""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cars",
+      "item": [
+        {
+          "name": "Get All Cars",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/cars",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["cars"]
+            }
+          }
+        },
+        {
+          "name": "Get Available Cars Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/cars?available_only=true",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["cars"],
+              "query": [
+                {
+                  "key": "available_only",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Car by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/cars/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["cars", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Car",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numImma\": \"ABC-123-XY\",\n  \"marque\": \"Toyota\",\n  \"modele\": \"Corolla\",\n  \"kilometrage\": 50000,\n  \"etat\": 0,\n  \"prixLocation\": 45.50\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/cars",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["cars"]
+            }
+          }
+        },
+        {
+          "name": "Update Car",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prixLocation\": 55.00,\n  \"kilometrage\": 51000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/cars/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["cars", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Car",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/cars/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["cars", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Renters",
+      "item": [
+        {
+          "name": "Get All Renters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/renters",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["renters"]
+            }
+          }
+        },
+        {
+          "name": "Search Renters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/renters?search=Jean",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["renters"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Jean"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Renter by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/renters/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["renters", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Renter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"adresse\": \"123 Rue de Paris, 75001 Paris\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/renters",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["renters"]
+            }
+          }
+        },
+        {
+          "name": "Update Renter",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adresse\": \"456 Avenue des Champs, 75008 Paris\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/renters/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["renters", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Renter",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/renters/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["renters", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rentals",
+      "item": [
+        {
+          "name": "Get All Rentals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/rentals",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Rentals Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/rentals?active_only=true",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals"],
+              "query": [
+                {
+                  "key": "active_only",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Rental by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/rentals/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Rentals by Car",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/rentals/car/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals", "car", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Rentals by Renter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/rentals/renter/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals", "renter", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Rental",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"carId\": 1,\n  \"renterId\": 1,\n  \"kmDebut\": 50000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/rentals",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals"]
+            }
+          }
+        },
+        {
+          "name": "Return Car (Update Rental)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFin\": \"2025-11-22T10:00:00\",\n  \"kmFin\": 50250,\n  \"montantTotal\": 91.00\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/rentals/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Rental",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/rentals/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["rentals", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

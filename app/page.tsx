@@ -1,65 +1,128 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { carsAPI, rentersAPI, rentalsAPI } from '@/lib/api-client'
 
-export default function Home() {
+export default async function HomePage() {
+  // Fetch data from API
+  const [carsResult, rentersResult, rentalsResult] = await Promise.all([
+    carsAPI.getAll(),
+    rentersAPI.getAll(),
+    rentalsAPI.getAll()
+  ])
+
+  const cars = carsResult.data || []
+  const renters = rentersResult.data || []
+  const rentals = rentalsResult.data || []
+
+  // Calculate statistics
+  const totalCars = cars.length
+  const availableCars = cars.filter(c => c.etat === 0).length
+  const rentedCars = cars.filter(c => c.etat === 1).length
+  const activeRentals = rentals.filter(r => !r.dateFin).length
+  const averageKilometrage = cars.length > 0 
+    ? Math.round(cars.reduce((sum, car) => sum + car.kilometrage, 0) / cars.length)
+    : 0
+
+  // Count renters with active rentals
+  const rentersWithActiveRentals = new Set(
+    rentals.filter(r => !r.dateFin).map(r => r.renterId)
+  ).size
+
+  const stats = [
+    {
+      title: 'Total Voitures',
+      value: totalCars,
+      description: `${availableCars} disponibles, ${rentedCars} louées`,
+      href: '/cars',
+      color: 'from-blue-500 to-blue-600'
+    },
+    {
+      title: 'Total Locataires',
+      value: renters.length,
+      description: `${rentersWithActiveRentals} en location`,
+      href: '/renters',
+      color: 'from-purple-500 to-purple-600'
+    },
+    {
+      title: 'Locations Actives',
+      value: activeRentals,
+      description: 'En cours',
+      href: '/rentals',
+      color: 'from-green-500 to-green-600'
+    },
+    {
+      title: 'Kilométrage Moyen',
+      value: `${averageKilometrage.toLocaleString()} km`,
+      description: 'Sur tous les véhicules',
+      href: '/cars',
+      color: 'from-orange-500 to-orange-600'
+    }
+  ]
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">Gestion de Location de Voitures</h1>
+          <p className="mt-1 text-sm text-gray-500">Gérez votre entreprise de location de voitures efficacement</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {stats.map((stat) => (
+            <Link
+              key={stat.title}
+              href={stat.href}
+              className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+              <div className="relative">
+                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900">{stat.value}</p>
+                <p className="mt-2 text-xs text-gray-500">{stat.description}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl shadow-md p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link
+              href="/cars"
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-lg font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              Gérer les Voitures
+            </Link>
+            
+            <Link
+              href="/renters"
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 hover:shadow-lg font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Gérer les Locataires
+            </Link>
+            
+            <Link
+              href="/rentals"
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:shadow-lg font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Gérer les Locations
+            </Link>
+          </div>
         </div>
       </main>
     </div>
-  );
+  )
 }
