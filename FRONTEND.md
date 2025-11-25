@@ -280,3 +280,4 @@ NEXT_PUBLIC_API_BASE_URL=https://your-api-domain.com
 - [Tailwind CSS](https://tailwindcss.com)
 - [TypeScript](https://www.typescriptlang.org)
 
+

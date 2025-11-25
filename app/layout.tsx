@@ -23,7 +23,7 @@ export default function RootLayout({
           <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-gray-900 text-white">
             <div className="flex items-center justify-center h-16 border-b border-gray-800">
               <Link href="/" className="text-xl font-bold">
-                🚗 Location Auto
+                TuniCars+
               </Link>
             </div>
             <nav className="flex-1 px-4 py-6 space-y-2">
@@ -42,7 +42,7 @@ export default function RootLayout({
             {/* Mobile Navigation */}
             <div className="lg:hidden bg-gray-900 text-white p-4 flex items-center justify-between">
               <Link href="/" className="text-lg font-bold">
-                🚗 Location Auto
+              TuniCars+
               </Link>
               <div className="flex gap-4">
                 <Link href="/" className="hover:text-gray-300">📊</Link>
