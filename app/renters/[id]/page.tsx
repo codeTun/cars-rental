@@ -74,7 +74,7 @@ export default async function RenterDetailPage({ params }: { params: Promise<{ i
                 <div key={rental.id} className="flex justify-between items-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                   <div>
                     <p className="font-medium text-gray-900">
-                      {rental.car.marque} {rental.car.modele}
+                      {rental.car?.marque} {rental.car?.modele}
                     </p>
                     <p className="text-sm text-gray-500">
                       Début: {new Date(rental.dateDebut).toLocaleDateString('fr-FR')}
@@ -101,14 +101,14 @@ export default async function RenterDetailPage({ params }: { params: Promise<{ i
                 <div key={rental.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                   <div>
                     <p className="font-medium text-gray-900">
-                      {rental.car.marque} {rental.car.modele}
+                      {rental.car?.marque} {rental.car?.modele}
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(rental.dateDebut).toLocaleDateString('fr-FR')} - {rental.dateFin && new Date(rental.dateFin).toLocaleDateString('fr-FR')}
                     </p>
                     {rental.montantTotal && (
                       <p className="text-sm font-medium text-green-600 mt-1">
-                        Total: {rental.montantTotal.toFixed(2)} €
+                        Total: {rental.montantTotal.toFixed(2)} DT
                       </p>
                     )}
                   </div>

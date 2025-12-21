@@ -1,64 +1,57 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your Prisma schema file for PostgreSQL
+// Learn more: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Model for Car (Voiture)
 model Car {
-  id            Int      @id @default(autoincrement())
-  numImma       String   @unique // Registration number
-  marque        String   // Brand
-  modele        String   // Model
-  kilometrage   Int      // Mileage
-  etat          Int      @default(0) // 0: available, 1: rented
-  prixLocation  Float    // Rental price per day
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  // Relations
+  id            Int       @id @default(autoincrement())
+  numImma       String    @unique
+  marque        String
+  modele        String
+  kilometrage   Int
+  etat          Int       @default(0) // 0 = disponible, 1 = louée
+  prixLocation  Float
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   rentals       Rental[]
-  
+
   @@map("cars")
 }
 
-// Model for Renter (Locataire)
 model Renter {
-  id        Int      @id @default(autoincrement())
-  nom       String   // Last name
-  prenom    String   // First name
-  adresse   String   // Address
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
+  id        Int       @id @default(autoincrement())
+  nom       String
+  prenom    String
+  adresse   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   rentals   Rental[]
-  
+
   @@map("renters")
 }
 
-// Model for Rental (Location)
 model Rental {
-  id            Int       @id @default(autoincrement())
-  carId         Int
-  renterId      Int
-  dateDebut     DateTime  @default(now()) // Start date
-  dateFin       DateTime? // End date (null if still rented)
-  kmDebut       Int       // Mileage at start
-  kmFin         Int?      // Mileage at return (null if not returned)
-  montantTotal  Float?    // Total amount
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           Int       @id @default(autoincrement())
+  carId        Int
+  renterId     Int
+  dateDebut    DateTime  @default(now())
+  dateFin      DateTime?
+  kmDebut      Int
+  kmFin        Int?
+  montantTotal Float?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   
-  // Relations
-  car           Car       @relation(fields: [carId], references: [id], onDelete: Cascade)
-  renter        Renter    @relation(fields: [renterId], references: [id], onDelete: Cascade)
-  
+  car          Car       @relation(fields: [carId], references: [id])
+  renter       Renter    @relation(fields: [renterId], references: [id])
+
   @@map("rentals")
 }
+

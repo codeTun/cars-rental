@@ -46,7 +46,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
               </div>
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="text-sm text-gray-600 mb-1">Prix par Jour</div>
-                <div className="text-2xl font-bold text-gray-900">{car.prixLocation.toFixed(2)} €</div>
+                <div className="text-2xl font-bold text-gray-900">{car.prixLocation.toFixed(2)} DT</div>
               </div>
             </div>
 

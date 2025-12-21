@@ -56,7 +56,7 @@ export default async function RentalDetailPage({ params }: { params: Promise<{ i
                     {rental.car.marque} {rental.car.modele}
                   </p>
                   <p className="text-sm text-gray-600">Immatriculation: {rental.car.numImma}</p>
-                  <p className="text-sm text-gray-600">Prix: {rental.car.prixLocation.toFixed(2)} €/jour</p>
+                  <p className="text-sm text-gray-600">Prix: {rental.car.prixLocation.toFixed(2)} DT/jour</p>
                 </div>
               </div>
 
@@ -123,7 +123,7 @@ export default async function RentalDetailPage({ params }: { params: Promise<{ i
                     {rental.montantTotal ? 'Montant Total' : 'Total Estimé'}
                   </div>
                   <div className="text-2xl font-bold text-green-900">
-                    {(rental.montantTotal || estimatedTotal).toFixed(2)} €
+                    {(rental.montantTotal || estimatedTotal).toFixed(2)} DT
                   </div>
                 </div>
               </div>

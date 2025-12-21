@@ -9,6 +9,7 @@ export interface Renter {
   adresse: string
   createdAt: string
   updatedAt: string
+  rentals?: import('./rentals').Rental[]
 }
 
 export interface CreateRenterInput {
@@ -40,5 +41,10 @@ export interface DeleteRenterResponse {
   data?: { message: string }
   error?: string
 }
+
+
+
+
+
 
 

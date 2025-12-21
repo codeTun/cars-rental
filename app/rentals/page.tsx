@@ -15,7 +15,7 @@ export default async function RentalsPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Gestion des Locations</h1>
-            <p className="mt-1 text-sm text-gray-500">GÃ©rez les locations et retours de voitures</p>
+            <p className="mt-1 text-sm text-gray-500">Gérez les locations et retours de voitures</p>
           </div>
           <Link
             href="/rentals/new"
@@ -46,8 +46,8 @@ export default async function RentalsPage() {
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">Aucune location trouvÃ©e</h3>
-            <p className="mt-2 text-sm text-gray-500">Commencez par crÃ©er votre premiÃ¨re location.</p>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">Aucune location trouvée</h3>
+            <p className="mt-2 text-sm text-gray-500">Commencez par créer votre première location.</p>
             <Link
               href="/rentals/new"
               className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -74,7 +74,7 @@ export default async function RentalsPage() {
                             <h3 className="text-lg font-bold text-gray-900">
                               {rental.car.marque} {rental.car.modele}
                             </h3>
-                            <p className="text-sm text-gray-500">ðŸ“‹ {rental.car.numImma}</p>
+                            <p className="text-sm text-gray-500">📋 {rental.car.numImma}</p>
                           </div>
                           <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
                             Active
@@ -89,18 +89,18 @@ export default async function RentalsPage() {
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Date de dÃ©but</span>
+                            <span className="text-gray-600">Date de début</span>
                             <span className="font-medium text-gray-900">
                               {new Date(rental.dateDebut).toLocaleDateString('fr-FR')}
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">KilomÃ©trage dÃ©but</span>
+                            <span className="text-gray-600">Kilométrage début</span>
                             <span className="font-medium text-gray-900">{rental.kmDebut.toLocaleString()} km</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Prix/Jour</span>
-                            <span className="font-medium text-gray-900">{rental.car.prixLocation.toFixed(2)} â‚¬</span>
+                            <span className="font-medium text-gray-900">{rental.car.prixLocation.toFixed(2)} DT</span>
                           </div>
                         </div>
 
@@ -108,7 +108,7 @@ export default async function RentalsPage() {
                           href={`/rentals/${rental.id}`}
                           className="block w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-center font-medium"
                         >
-                          Voir DÃ©tails / Rendre la Voiture
+                          Voir Détails / Rendre la Voiture
                         </Link>
                       </div>
                     </div>
@@ -122,7 +122,7 @@ export default async function RentalsPage() {
               <h2 className="text-xl font-bold text-gray-900 mb-4">Historique des Locations</h2>
               {completedRentals.length === 0 ? (
                 <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
-                  Aucune location terminÃ©e pour le moment
+                  Aucune location terminée pour le moment
                 </div>
               ) : (
                 <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -136,7 +136,7 @@ export default async function RentalsPage() {
                           Locataire
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          PÃ©riode
+                          Période
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Total
@@ -162,14 +162,14 @@ export default async function RentalsPage() {
                             {new Date(rental.dateDebut).toLocaleDateString('fr-FR')} - {rental.dateFin && new Date(rental.dateFin).toLocaleDateString('fr-FR')}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                            {rental.montantTotal?.toFixed(2)} â‚¬
+                            {rental.montantTotal?.toFixed(2)} DT
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <Link
                               href={`/rentals/${rental.id}`}
                               className="text-blue-600 hover:text-blue-900"
                             >
-                              Voir DÃ©tails
+                              Voir Détails
                             </Link>
                           </td>
                         </tr>

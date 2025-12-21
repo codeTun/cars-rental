@@ -1,7 +1,7 @@
 """
 Pydantic Schemas for Request/Response Validation
 """
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from datetime import datetime
 from typing import Optional
 
@@ -36,10 +36,15 @@ class CarUpdate(BaseModel):
 class CarResponse(CarBase):
     """Schema for car response"""
     id: int
-    createdAt: str  # ISO format string
-    updatedAt: str  # ISO format string
+    createdAt: datetime
+    updatedAt: datetime
     
     model_config = ConfigDict(from_attributes=True)
+    
+    @field_serializer('createdAt', 'updatedAt')
+    def serialize_datetime(self, dt: datetime, _info) -> str:
+        """Convert datetime to ISO format string"""
+        return dt.isoformat() if dt else None
 
 
 # ============== Renter Schemas ==============
@@ -66,10 +71,15 @@ class RenterUpdate(BaseModel):
 class RenterResponse(RenterBase):
     """Schema for renter response"""
     id: int
-    createdAt: str  # ISO format string
-    updatedAt: str  # ISO format string
+    createdAt: datetime
+    updatedAt: datetime
     
     model_config = ConfigDict(from_attributes=True)
+    
+    @field_serializer('createdAt', 'updatedAt')
+    def serialize_datetime(self, dt: datetime, _info) -> str:
+        """Convert datetime to ISO format string"""
+        return dt.isoformat() if dt else None
 
 
 # ============== Rental Schemas ==============
@@ -96,14 +106,19 @@ class RentalUpdate(BaseModel):
 class RentalResponse(RentalBase):
     """Schema for rental response"""
     id: int
-    dateDebut: str  # ISO format string
-    dateFin: Optional[str] = None  # ISO format string
+    dateDebut: datetime
+    dateFin: Optional[datetime] = None
     kmFin: Optional[int] = None
     montantTotal: Optional[float] = None
-    createdAt: str  # ISO format string
-    updatedAt: str  # ISO format string
+    createdAt: datetime
+    updatedAt: datetime
     
     model_config = ConfigDict(from_attributes=True)
+    
+    @field_serializer('dateDebut', 'dateFin', 'createdAt', 'updatedAt')
+    def serialize_datetime(self, dt: datetime, _info) -> str:
+        """Convert datetime to ISO format string"""
+        return dt.isoformat() if dt else None
 
 
 class RentalWithDetails(RentalResponse):

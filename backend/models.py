@@ -2,7 +2,7 @@
 SQLAlchemy Database Models
 These models match the Prisma schema
 """
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -19,8 +19,8 @@ class Car(Base):
     kilometrage = Column(Integer, nullable=False)  # Mileage
     etat = Column(Integer, default=0, nullable=False)  # 0: available, 1: rented
     prixLocation = Column(Float, nullable=False)  # Rental price per day
-    createdAt = Column(Text, nullable=False)  # Stored as ISO string in SQLite
-    updatedAt = Column(Text, nullable=False)  # Stored as ISO string in SQLite
+    createdAt = Column(DateTime, nullable=False, default=datetime.now)
+    updatedAt = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
     # Relationships
     rentals = relationship("Rental", back_populates="car", cascade="all, delete-orphan")
@@ -34,8 +34,8 @@ class Renter(Base):
     nom = Column(String, nullable=False)  # Last name
     prenom = Column(String, nullable=False)  # First name
     adresse = Column(String, nullable=False)  # Address
-    createdAt = Column(Text, nullable=False)  # Stored as ISO string in SQLite
-    updatedAt = Column(Text, nullable=False)  # Stored as ISO string in SQLite
+    createdAt = Column(DateTime, nullable=False, default=datetime.now)
+    updatedAt = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
     # Relationships
     rentals = relationship("Rental", back_populates="renter", cascade="all, delete-orphan")
@@ -48,13 +48,13 @@ class Rental(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     carId = Column(Integer, ForeignKey("cars.id", ondelete="CASCADE"), nullable=False)
     renterId = Column(Integer, ForeignKey("renters.id", ondelete="CASCADE"), nullable=False)
-    dateDebut = Column(Text, nullable=False)  # Start date - stored as ISO string
-    dateFin = Column(Text, nullable=True)  # End date - stored as ISO string
+    dateDebut = Column(DateTime, nullable=False, default=datetime.now)
+    dateFin = Column(DateTime, nullable=True)
     kmDebut = Column(Integer, nullable=False)  # Mileage at start
     kmFin = Column(Integer, nullable=True)  # Mileage at return (null if not returned)
     montantTotal = Column(Float, nullable=True)  # Total amount
-    createdAt = Column(Text, nullable=False)  # Stored as ISO string in SQLite
-    updatedAt = Column(Text, nullable=False)  # Stored as ISO string in SQLite
+    createdAt = Column(DateTime, nullable=False, default=datetime.now)
+    updatedAt = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
     # Relationships
     car = relationship("Car", back_populates="rentals")

@@ -5,15 +5,19 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
+from dotenv import load_dotenv
 
-# Database URL - using the same SQLite database as Next.js app
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./prisma/dev.db")
+# Load environment variables
+load_dotenv()
 
-# Create engine
-engine = create_engine(
-    DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # Needed for SQLite
-)
+# Database URL - using PostgreSQL
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
+
+# Create engine (removed SQLite-specific connect_args)
+engine = create_engine(DATABASE_URL)
 
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

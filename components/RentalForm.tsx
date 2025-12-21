@@ -86,21 +86,21 @@ export function RentalForm({ cars, renters }: RentalFormProps) {
           <option value="">Choisir une voiture...</option>
           {cars.map((car) => (
             <option key={car.id} value={car.id}>
-              {car.marque} {car.modele} - {car.numImma} ({car.prixLocation.toFixed(2)} €/jour)
+              {car.marque} {car.modele} - {car.numImma} ({car.prixLocation.toFixed(2)} DT/jour)
             </option>
           ))}
         </select>
         
         {selectedCar && (
-          <div className="mt-3 p-4 bg-blue-50 rounded-lg">
-            <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="mt-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <span className="text-gray-600">Kilométrage actuel:</span>
-                <span className="ml-2 font-medium">{selectedCar.kilometrage.toLocaleString()} km</span>
+                <span className="text-blue-700 font-medium">Kilométrage actuel:</span>
+                <span className="ml-2 font-bold text-blue-900">{selectedCar.kilometrage.toLocaleString()} km</span>
               </div>
               <div>
-                <span className="text-gray-600">Prix/Jour:</span>
-                <span className="ml-2 font-medium">{selectedCar.prixLocation.toFixed(2)} €</span>
+                <span className="text-blue-700 font-medium">Prix/Jour:</span>
+                <span className="ml-2 font-bold text-blue-900">{selectedCar.prixLocation.toFixed(2)} DT</span>
               </div>
             </div>
           </div>

@@ -115,7 +115,7 @@ export function CarForm({ car }: CarFormProps) {
 
         <div>
           <label htmlFor="prixLocation" className="block text-sm font-medium text-gray-700 mb-2">
-            Prix par Jour (€) *
+            Prix par Jour (DT) *
           </label>
           <input
             type="number"

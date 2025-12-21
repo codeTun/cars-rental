@@ -71,7 +71,7 @@ export default async function CarsPage() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Prix/Jour</span>
-                      <span className="font-medium text-gray-900">{car.prixLocation.toFixed(2)} €</span>
+                      <span className="font-medium text-gray-900">{car.prixLocation.toFixed(2)} DT</span>
                     </div>
                   </div>
 
