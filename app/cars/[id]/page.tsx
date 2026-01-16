@@ -58,7 +58,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
                     <div key={rental.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                       <div>
                         <p className="font-medium text-gray-900">
-                          {rental.renter.prenom} {rental.renter.nom}
+                          {rental.renter?.prenom} {rental.renter?.nom}
                         </p>
                         <p className="text-sm text-gray-500">
                           {new Date(rental.dateDebut).toLocaleDateString('fr-FR')}

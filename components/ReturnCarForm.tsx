@@ -6,7 +6,7 @@ import { rentalsAPI } from '@/lib/api-client'
 import type { Rental, Car, Renter } from '@/types'
 
 interface ReturnCarFormProps {
-  rental: Rental & { car: Car; renter: Renter }
+  rental: Rental
 }
 
 export function ReturnCarForm({ rental }: ReturnCarFormProps) {
@@ -26,7 +26,7 @@ export function ReturnCarForm({ rental }: ReturnCarFormProps) {
     const startDate = new Date(rental.dateDebut)
     const endDate = new Date()
     const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    const montantTotal = days * rental.car.prixLocation
+    const montantTotal = days * (rental.car?.prixLocation || 0)
 
     const result = await rentalsAPI.update(rental.id, {
       dateFin: endDate.toISOString(),

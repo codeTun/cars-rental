@@ -6,7 +6,10 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from datetime import datetime
 
-from . import models, schemas
+try:
+    from . import models, schemas
+except ImportError:
+    import models, schemas
 
 
 def convert_timestamps_to_iso(obj):

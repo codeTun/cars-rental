@@ -72,9 +72,9 @@ export default async function RentalsPage() {
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">
-                              {rental.car.marque} {rental.car.modele}
+                              {rental.car?.marque} {rental.car?.modele}
                             </h3>
-                            <p className="text-sm text-gray-500">📋 {rental.car.numImma}</p>
+                            <p className="text-sm text-gray-500">📋 {rental.car?.numImma}</p>
                           </div>
                           <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
                             Active
@@ -85,7 +85,7 @@ export default async function RentalsPage() {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Locataire</span>
                             <span className="font-medium text-gray-900">
-                              {rental.renter.prenom} {rental.renter.nom}
+                              {rental.renter?.prenom} {rental.renter?.nom}
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
@@ -100,7 +100,7 @@ export default async function RentalsPage() {
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Prix/Jour</span>
-                            <span className="font-medium text-gray-900">{rental.car.prixLocation.toFixed(2)} DT</span>
+                            <span className="font-medium text-gray-900">{rental.car?.prixLocation.toFixed(2)} DT</span>
                           </div>
                         </div>
 
@@ -151,12 +151,12 @@ export default async function RentalsPage() {
                         <tr key={rental.id} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
-                              {rental.car.marque} {rental.car.modele}
+                              {rental.car?.marque} {rental.car?.modele}
                             </div>
-                            <div className="text-sm text-gray-500">{rental.car.numImma}</div>
+                            <div className="text-sm text-gray-500">{rental.car?.numImma}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {rental.renter.prenom} {rental.renter.nom}
+                            {rental.renter?.prenom} {rental.renter?.nom}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(rental.dateDebut).toLocaleDateString('fr-FR')} - {rental.dateFin && new Date(rental.dateFin).toLocaleDateString('fr-FR')}
