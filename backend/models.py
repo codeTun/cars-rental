@@ -1,6 +1,6 @@
 """
 SQLAlchemy Database Models
-These models match the Prisma schema with PostgreSQL lowercase column names
+These models match the Prisma schema exactly (camelCase columns)
 """
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
@@ -17,14 +17,14 @@ class Car(Base):
     __tablename__ = "cars"
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    numImma = Column("numimma", String, unique=True, index=True, nullable=False)
+    numImma = Column(String, unique=True, index=True, nullable=False)
     marque = Column(String, nullable=False)
     modele = Column(String, nullable=False)
     kilometrage = Column(Integer, nullable=False)
     etat = Column(Integer, default=0, nullable=False)  # 0: available, 1: rented
-    prixLocation = Column("prixlocation", Float, nullable=False)
-    createdAt = Column("createdat", DateTime, default=datetime.utcnow)
-    updatedAt = Column("updatedat", DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    prixLocation = Column(Float, nullable=False)
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationship
     rentals = relationship("Rental", back_populates="car")
@@ -38,8 +38,8 @@ class Renter(Base):
     nom = Column(String, nullable=False)
     prenom = Column(String, nullable=False)
     adresse = Column(String, nullable=False)
-    createdAt = Column("createdat", DateTime, default=datetime.utcnow)
-    updatedAt = Column("updatedat", DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationship
     rentals = relationship("Rental", back_populates="renter")
@@ -50,15 +50,15 @@ class Rental(Base):
     __tablename__ = "rentals"
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    carId = Column("carid", Integer, ForeignKey("cars.id"), nullable=False)
-    renterId = Column("renterid", Integer, ForeignKey("renters.id"), nullable=False)
-    dateDebut = Column("datedebut", DateTime, default=datetime.utcnow)
-    dateFin = Column("datefin", DateTime, nullable=True)
-    kmDebut = Column("kmdebut", Integer, nullable=False)
-    kmFin = Column("kmfin", Integer, nullable=True)
-    montantTotal = Column("montanttotal", Float, nullable=True)
-    createdAt = Column("createdat", DateTime, default=datetime.utcnow)
-    updatedAt = Column("updatedat", DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    carId = Column(Integer, ForeignKey("cars.id"), nullable=False)
+    renterId = Column(Integer, ForeignKey("renters.id"), nullable=False)
+    dateDebut = Column(DateTime, default=datetime.utcnow)
+    dateFin = Column(DateTime, nullable=True)
+    kmDebut = Column(Integer, nullable=False)
+    kmFin = Column(Integer, nullable=True)
+    montantTotal = Column(Float, nullable=True)
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     car = relationship("Car", back_populates="rentals")
