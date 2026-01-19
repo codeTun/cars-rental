@@ -17,15 +17,54 @@ export default async function HomePage() {
   const totalCars = cars.length
   const availableCars = cars.filter(c => c.etat === 0).length
   const rentedCars = cars.filter(c => c.etat === 1).length
-  const activeRentals = rentals.filter(r => !r.dateFin).length
-  const averageKilometrage = cars.length > 0 
-    ? Math.round(cars.reduce((sum, car) => sum + car.kilometrage, 0) / cars.length)
-    : 0
+  
+  const now = new Date()
+  
+  // Active = Car not returned yet (kmFin is null) AND (no end date OR end date in future)
+  const activeRentals = rentals.filter(r => {
+    if (r.kmFin !== null) return false
+    if (!r.dateFin) return true
+    const endDate = new Date(r.dateFin)
+    return endDate >= now
+  }).length
 
   // Count renters with active rentals
   const rentersWithActiveRentals = new Set(
-    rentals.filter(r => !r.dateFin).map(r => r.renterId)
+    rentals.filter(r => {
+      if (r.kmFin !== null) return false
+      if (!r.dateFin) return true
+      const endDate = new Date(r.dateFin)
+      return endDate >= now
+    }).map(r => r.renterId)
   ).size
+
+  // REVENUE: Counted when rental is CREATED (payment is upfront)
+  // Based on dateDebut (rental start date = payment date)
+  const rentalsWithRevenue = rentals.filter(r => r.montantTotal && r.montantTotal > 0)
+  const totalRevenue = rentalsWithRevenue.reduce((sum, r) => sum + (r.montantTotal || 0), 0)
+  
+  // Revenue by period - based on when rental STARTED (dateDebut)
+  const todayRevenue = rentalsWithRevenue
+    .filter(r => {
+      const startDate = new Date(r.dateDebut)
+      return startDate.toDateString() === now.toDateString()
+    })
+    .reduce((sum, r) => sum + (r.montantTotal || 0), 0)
+  
+  const thisWeekRevenue = rentalsWithRevenue
+    .filter(r => {
+      const startDate = new Date(r.dateDebut)
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      return startDate >= weekAgo
+    })
+    .reduce((sum, r) => sum + (r.montantTotal || 0), 0)
+  
+  const thisMonthRevenue = rentalsWithRevenue
+    .filter(r => {
+      const startDate = new Date(r.dateDebut)
+      return startDate.getMonth() === now.getMonth() && startDate.getFullYear() === now.getFullYear()
+    })
+    .reduce((sum, r) => sum + (r.montantTotal || 0), 0)
 
   const stats = [
     {
@@ -50,12 +89,18 @@ export default async function HomePage() {
       color: 'from-green-500 to-green-600'
     },
     {
-      title: 'Kilométrage Moyen',
-      value: `${averageKilometrage.toLocaleString()} km`,
-      description: 'Sur tous les véhicules',
-      href: '/cars',
-      color: 'from-orange-500 to-orange-600'
+      title: 'Revenus Total',
+      value: `${totalRevenue.toFixed(2)} DT`,
+      description: `${rentalsWithRevenue.length} locations payées`,
+      href: '/rentals',
+      color: 'from-emerald-500 to-emerald-600'
     }
+  ]
+
+  const revenueStats = [
+    { period: "Aujourd'hui", amount: todayRevenue, icon: '📅' },
+    { period: 'Cette Semaine', amount: thisWeekRevenue, icon: '📊' },
+    { period: 'Ce Mois', amount: thisMonthRevenue, icon: '📈' }
   ]
 
   return (
@@ -70,7 +115,7 @@ export default async function HomePage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
             <Link
               key={stat.title}
@@ -85,6 +130,23 @@ export default async function HomePage() {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Revenue Stats Section */}
+        <div className="bg-white rounded-2xl shadow-md p-8 mb-8" id="revenue-section">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">💰 Revenus par Période</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {revenueStats.map((stat) => (
+              <div key={stat.period} className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-3xl">{stat.icon}</span>
+                  <span className="text-sm font-medium text-green-700">{stat.period}</span>
+                </div>
+                <p className="text-3xl font-bold text-green-900">{stat.amount.toFixed(2)} DT</p>
+                <p className="text-sm text-green-600 mt-1">Bénéfices générés</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Quick Actions */}

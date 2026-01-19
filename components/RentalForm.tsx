@@ -15,6 +15,24 @@ export function RentalForm({ cars, renters }: RentalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [selectedCar, setSelectedCar] = useState<Car | null>(null)
+  const [endDate, setEndDate] = useState('')
+  const [estimatedPrice, setEstimatedPrice] = useState(0)
+
+  // Calculate estimated price when car or end date changes
+  const calculatePrice = (car: Car | null, endDateValue: string) => {
+    if (!car || !endDateValue) {
+      setEstimatedPrice(0)
+      return
+    }
+    const start = new Date()
+    const end = new Date(endDateValue)
+    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+    if (days > 0) {
+      setEstimatedPrice(days * car.prixLocation)
+    } else {
+      setEstimatedPrice(0)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -26,6 +44,8 @@ export function RentalForm({ cars, renters }: RentalFormProps) {
       carId: parseInt(formData.get('carId') as string),
       renterId: parseInt(formData.get('renterId') as string),
       kmDebut: selectedCar?.kilometrage || 0,
+      dateFin: endDate || undefined,
+      montantTotal: estimatedPrice > 0 ? estimatedPrice : undefined,
     }
 
     const result = await rentalsAPI.create(data)
@@ -78,8 +98,9 @@ export function RentalForm({ cars, renters }: RentalFormProps) {
           name="carId"
           required
           onChange={(e) => {
-            const car = cars.find(c => c.id === parseInt(e.target.value))
-            setSelectedCar(car || null)
+            const car = cars.find(c => c.id === parseInt(e.target.value)) || null
+            setSelectedCar(car)
+            calculatePrice(car, endDate)
           }}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
         >
@@ -126,9 +147,40 @@ export function RentalForm({ cars, renters }: RentalFormProps) {
         </select>
       </div>
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <p className="text-sm text-yellow-800">
-          <strong>Note:</strong> La location commencera immédiatement avec la date actuelle et le kilométrage actuel de la voiture.
+      <div>
+        <label htmlFor="dateFin" className="block text-sm font-medium text-gray-700 mb-2">
+          Date de Fin Prévue *
+        </label>
+        <input
+          type="date"
+          id="dateFin"
+          name="dateFin"
+          required
+          min={new Date().toISOString().split('T')[0]}
+          value={endDate}
+          onChange={(e) => {
+            setEndDate(e.target.value)
+            calculatePrice(selectedCar, e.target.value)
+          }}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      {estimatedPrice > 0 && (
+        <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
+          <div className="flex justify-between items-center">
+            <span className="text-green-900 font-medium">Prix Total Estimé:</span>
+            <span className="text-2xl font-bold text-green-700">{estimatedPrice.toFixed(2)} DT</span>
+          </div>
+          <p className="text-sm text-green-600 mt-1">
+            Calculé automatiquement selon la durée de location
+          </p>
+        </div>
+      )}
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p className="text-sm text-blue-800">
+          <strong>Note:</strong> La location commencera aujourd'hui avec le kilométrage actuel de la voiture.
         </p>
       </div>
 
