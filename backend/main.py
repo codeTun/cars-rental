@@ -7,8 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
 
-from .database import engine, Base
-from .routers import cars, renters, rentals
+try:
+    from .database import engine, Base
+    from .routers import cars, renters, rentals
+except ImportError:
+    from database import engine, Base
+    from routers import cars, renters, rentals
 
 # Create database tables
 # Note: In production, use Alembic for migrations instead

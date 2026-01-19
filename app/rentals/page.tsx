@@ -5,8 +5,29 @@ export default async function RentalsPage() {
   const result = await rentalsAPI.getAll()
   const rentals = result.data || []
 
-  const activeRentals = rentals.filter(r => !r.dateFin)
-  const completedRentals = rentals.filter(r => r.dateFin)
+  const now = new Date()
+  
+  // Active = Car not returned yet (kmFin is null) AND (no end date OR end date in future)
+  const activeRentals = rentals.filter(r => {
+    // If car was returned (kmFin set), it's not active
+    if (r.kmFin !== null) return false
+    // If no end date, it's active
+    if (!r.dateFin) return true
+    // If end date is in future or today, it's active
+    const endDate = new Date(r.dateFin)
+    return endDate >= now
+  })
+  
+  // Completed = Car returned (kmFin set) OR end date has passed
+  const completedRentals = rentals.filter(r => {
+    // If car was returned, it's completed
+    if (r.kmFin !== null) return true
+    // If no end date and car not returned, it's not completed
+    if (!r.dateFin) return false
+    // If end date has passed, it's completed
+    const endDate = new Date(r.dateFin)
+    return endDate < now
+  })
 
   return (
     <div className="flex-1 bg-gray-50">
@@ -72,9 +93,9 @@ export default async function RentalsPage() {
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">
-                              {rental.car.marque} {rental.car.modele}
+                              {rental.car?.marque} {rental.car?.modele}
                             </h3>
-                            <p className="text-sm text-gray-500">📋 {rental.car.numImma}</p>
+                            <p className="text-sm text-gray-500">📋 {rental.car?.numImma}</p>
                           </div>
                           <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
                             Active
@@ -85,7 +106,7 @@ export default async function RentalsPage() {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Locataire</span>
                             <span className="font-medium text-gray-900">
-                              {rental.renter.prenom} {rental.renter.nom}
+                              {rental.renter?.prenom} {rental.renter?.nom}
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
@@ -94,21 +115,35 @@ export default async function RentalsPage() {
                               {new Date(rental.dateDebut).toLocaleDateString('fr-FR')}
                             </span>
                           </div>
+                          {rental.dateFin && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Date de fin prévue</span>
+                              <span className="font-medium text-orange-600">
+                                {new Date(rental.dateFin).toLocaleDateString('fr-FR')}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Kilométrage début</span>
                             <span className="font-medium text-gray-900">{rental.kmDebut.toLocaleString()} km</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Prix/Jour</span>
-                            <span className="font-medium text-gray-900">{rental.car.prixLocation.toFixed(2)} DT</span>
+                            <span className="font-medium text-gray-900">{rental.car?.prixLocation.toFixed(2)} DT</span>
                           </div>
+                          {rental.montantTotal && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Montant estimé</span>
+                              <span className="font-medium text-green-600">{rental.montantTotal.toFixed(2)} DT</span>
+                            </div>
+                          )}
                         </div>
 
                         <Link
                           href={`/rentals/${rental.id}`}
                           className="block w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-center font-medium"
                         >
-                          Voir Détails / Rendre la Voiture
+                          Voir Détails 
                         </Link>
                       </div>
                     </div>
@@ -151,12 +186,12 @@ export default async function RentalsPage() {
                         <tr key={rental.id} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
-                              {rental.car.marque} {rental.car.modele}
+                              {rental.car?.marque} {rental.car?.modele}
                             </div>
-                            <div className="text-sm text-gray-500">{rental.car.numImma}</div>
+                            <div className="text-sm text-gray-500">{rental.car?.numImma}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {rental.renter.prenom} {rental.renter.nom}
+                            {rental.renter?.prenom} {rental.renter?.nom}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(rental.dateDebut).toLocaleDateString('fr-FR')} - {rental.dateFin && new Date(rental.dateFin).toLocaleDateString('fr-FR')}

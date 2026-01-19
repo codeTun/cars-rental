@@ -5,8 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 
-from .. import crud, schemas
-from ..database import get_db
+try:
+    from .. import crud, schemas
+    from ..database import get_db
+except ImportError:
+    import crud, schemas
+    from database import get_db
 
 router = APIRouter(
     prefix="/cars",

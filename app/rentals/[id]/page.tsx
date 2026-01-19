@@ -18,7 +18,7 @@ export default async function RentalDetailPage({ params }: { params: Promise<{ i
   const startDate = new Date(rental.dateDebut)
   const endDate = rental.dateFin ? new Date(rental.dateFin) : new Date()
   const daysRented = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-  const estimatedTotal = daysRented * rental.car.prixLocation
+  const estimatedTotal = daysRented * (rental.car?.prixLocation || 0)
 
   return (
     <div className="flex-1 bg-gray-50">
@@ -53,10 +53,10 @@ export default async function RentalDetailPage({ params }: { params: Promise<{ i
                 <h3 className="text-sm font-medium text-blue-900 mb-3">🚗 Informations Voiture</h3>
                 <div className="space-y-2">
                   <p className="text-lg font-bold text-gray-900">
-                    {rental.car.marque} {rental.car.modele}
+                    {rental.car?.marque} {rental.car?.modele}
                   </p>
-                  <p className="text-sm text-gray-600">Immatriculation: {rental.car.numImma}</p>
-                  <p className="text-sm text-gray-600">Prix: {rental.car.prixLocation.toFixed(2)} DT/jour</p>
+                  <p className="text-sm text-gray-600">Immatriculation: {rental.car?.numImma}</p>
+                  <p className="text-sm text-gray-600">Prix: {rental.car?.prixLocation.toFixed(2)} DT/jour</p>
                 </div>
               </div>
 
@@ -64,10 +64,10 @@ export default async function RentalDetailPage({ params }: { params: Promise<{ i
                 <h3 className="text-sm font-medium text-purple-900 mb-3">👤 Informations Locataire</h3>
                 <div className="space-y-2">
                   <p className="text-lg font-bold text-gray-900">
-                    {rental.renter.prenom} {rental.renter.nom}
+                    {rental.renter?.prenom} {rental.renter?.nom}
                   </p>
-                  <p className="text-sm text-gray-600">ID: #{rental.renter.id}</p>
-                  <p className="text-sm text-gray-600">Adresse: {rental.renter.adresse}</p>
+                  <p className="text-sm text-gray-600">ID: #{rental.renter?.id}</p>
+                  <p className="text-sm text-gray-600">Adresse: {rental.renter?.adresse}</p>
                 </div>
               </div>
             </div>

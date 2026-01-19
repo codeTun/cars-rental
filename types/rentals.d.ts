@@ -25,6 +25,8 @@ export interface CreateRentalInput {
   renterId: number
   kmDebut: number
   dateDebut?: string
+  dateFin?: string
+  montantTotal?: number
 }
 
 export interface UpdateRentalInput {
@@ -50,6 +52,10 @@ export interface DeleteRentalResponse {
   data?: { message: string }
   error?: string
 }
+
+
+
+
 
 
 

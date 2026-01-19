@@ -12,6 +12,7 @@ export interface Car {
   prixLocation: number
   createdAt: string
   updatedAt: string
+  rentals?: import('./rentals').Rental[]
 }
 
 export interface CreateCarInput {
@@ -49,6 +50,9 @@ export interface DeleteCarResponse {
   data?: { message: string }
   error?: string
 }
+
+
+
 
 
 

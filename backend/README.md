@@ -1,262 +1,467 @@
-# Car Rental Management API - Backend
+# 🐍 Backend FastAPI - Documentation Technique
 
-A comprehensive FastAPI backend for managing a car rental business.
+## Architecture du Backend
 
-## 🚀 Features
-
-- **RESTful API** with automatic OpenAPI documentation
-- **CRUD Operations** for Cars, Renters, and Rentals
-- **Database Integration** using SQLAlchemy ORM
-- **Data Validation** with Pydantic schemas
-- **CORS Support** for frontend integration
-- **Clean Architecture** with separation of concerns
-
-## 📋 Prerequisites
-
-- Python 3.8 or higher
-- pip (Python package manager)
-- SQLite (comes with Python)
-
-## 🛠️ Installation
-
-1. **Navigate to the backend directory:**
-   ```bash
-   cd backend
-   ```
-
-2. **Create a virtual environment (recommended):**
-   ```bash
-   # Windows
-   python -m venv venv
-   venv\Scripts\activate
-
-   # Linux/Mac
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables:**
-   ```bash
-   # Copy the example env file
-   cp .env.example .env
-   
-   # Edit .env if needed (optional - defaults work fine)
-   ```
-
-## 🏃 Running the Application
-
-### Development Mode (with auto-reload)
-
-```bash
-# From the project root directory
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Or run directly:
-
-```bash
-python -m backend.main
-```
-
-The API will be available at:
-- **API**: http://localhost:8000
-- **Interactive Docs**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-### Production Mode
-
-```bash
-uvicorn backend.main:app --host 0.0.0.0 --port 8000
-```
-
-## 📚 API Documentation
-
-Once the server is running, visit:
-
-- **Swagger UI**: http://localhost:8000/docs - Interactive API documentation
-- **ReDoc**: http://localhost:8000/redoc - Alternative documentation format
-
-## 🗂️ Project Structure
+Le backend est construit avec **FastAPI**, un framework Python moderne et performant pour la création d'APIs REST.
 
 ```
 backend/
-├── __init__.py           # Package initialization
-├── main.py              # FastAPI application entry point
-├── database.py          # Database configuration and connection
-├── models.py            # SQLAlchemy database models
-├── schemas.py           # Pydantic validation schemas
-├── crud.py              # Database CRUD operations
-├── routers/             # API route handlers
-│   ├── __init__.py
-│   ├── cars.py          # Car endpoints
-│   ├── renters.py       # Renter endpoints
-│   └── rentals.py       # Rental endpoints
-├── requirements.txt     # Python dependencies
-└── README.md           # This file
+├── main.py              # Point d'entrée de l'application
+├── database.py          # Configuration SQLAlchemy
+├── models.py            # Modèles ORM
+├── schemas.py           # Schémas Pydantic
+├── crud.py              # Opérations CRUD
+├── run.py               # Script de démarrage
+├── requirements.txt     # Dépendances Python
+└── routers/             # Endpoints API
+    ├── __init__.py
+    ├── cars.py          # Routes /cars
+    ├── renters.py       # Routes /renters
+    └── rentals.py       # Routes /rentals
 ```
 
-## 🔌 API Endpoints
+---
 
-### Cars (`/cars`)
+## 📦 Dépendances (requirements.txt)
 
-- `GET /cars` - List all cars
-- `GET /cars/{id}` - Get specific car
-- `POST /cars` - Create new car
-- `PUT /cars/{id}` - Update car
-- `DELETE /cars/{id}` - Delete car
+```
+fastapi==0.104.1          # Framework web
+uvicorn[standard]==0.24.0 # Serveur ASGI
+sqlalchemy==2.0.23        # ORM
+psycopg2-binary==2.9.9    # Driver PostgreSQL
+pydantic==2.5.0           # Validation
+python-dotenv==1.0.0      # Variables d'environnement
+```
 
-### Renters (`/renters`)
+---
 
-- `GET /renters` - List all renters
-- `GET /renters/{id}` - Get specific renter
-- `POST /renters` - Create new renter
-- `PUT /renters/{id}` - Update renter
-- `DELETE /renters/{id}` - Delete renter
+## 🗂 Fichiers Détaillés
 
-### Rentals (`/rentals`)
+### 1. main.py - Point d'Entrée
 
-- `GET /rentals` - List all rentals
-- `GET /rentals/{id}` - Get specific rental
-- `GET /rentals/car/{car_id}` - Get rentals by car
-- `GET /rentals/renter/{renter_id}` - Get rentals by renter
-- `POST /rentals` - Create new rental
-- `PUT /rentals/{id}` - Update rental (return car)
-- `DELETE /rentals/{id}` - Delete rental
+```python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-## 💾 Database
+# Création de l'application
+app = FastAPI(
+    title="Car Rental Management API",
+    version="1.0.0",
+    docs_url="/docs",      # Swagger UI
+    redoc_url="/redoc"     # ReDoc
+)
 
-The application uses SQLite database located at `../prisma/dev.db` (shared with Next.js frontend).
+# Configuration CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-### Database Models
+# Inclusion des routers
+app.include_router(cars.router)
+app.include_router(renters.router)
+app.include_router(rentals.router)
+```
 
-- **Car**: Vehicle information (registration, brand, model, mileage, price)
-- **Renter**: Customer information (name, address)
-- **Rental**: Rental transactions (dates, mileage, amount)
+**Endpoints racine :**
+- `GET /` - Informations API
+- `GET /health` - Health check
 
-## 🔄 Example API Calls
+---
 
-### Create a Car
+### 2. database.py - Configuration Base de Données
+
+```python
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+
+# URL de connexion PostgreSQL
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/cars-rental")
+
+# Création du moteur SQLAlchemy
+engine = create_engine(DATABASE_URL)
+
+# Session locale
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base pour les modèles
+Base = declarative_base()
+
+# Dependency injection pour les routes
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+```
+
+---
+
+### 3. models.py - Modèles SQLAlchemy
+
+#### Modèle Car (Voiture)
+```python
+class Car(Base):
+    __tablename__ = "cars"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    numImma = Column(String, unique=True, index=True)  # Immatriculation
+    marque = Column(String)                             # Marque
+    modele = Column(String)                             # Modèle
+    kilometrage = Column(Integer)                       # Kilométrage
+    etat = Column(Integer, default=0)                   # 0=disponible, 1=louée
+    prixLocation = Column(Float)                        # Prix/jour
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, onupdate=datetime.utcnow)
+    
+    # Relation One-to-Many avec Rental
+    rentals = relationship("Rental", back_populates="car")
+```
+
+#### Modèle Renter (Locataire)
+```python
+class Renter(Base):
+    __tablename__ = "renters"
+    
+    id = Column(Integer, primary_key=True)
+    nom = Column(String)          # Nom de famille
+    prenom = Column(String)       # Prénom
+    adresse = Column(String)      # Adresse
+    createdAt = Column(DateTime)
+    updatedAt = Column(DateTime)
+    
+    rentals = relationship("Rental", back_populates="renter")
+```
+
+#### Modèle Rental (Location)
+```python
+class Rental(Base):
+    __tablename__ = "rentals"
+    
+    id = Column(Integer, primary_key=True)
+    carId = Column(Integer, ForeignKey("cars.id"))
+    renterId = Column(Integer, ForeignKey("renters.id"))
+    dateDebut = Column(DateTime)           # Date de début
+    dateFin = Column(DateTime, nullable=True)    # Date de fin (null si active)
+    kmDebut = Column(Integer)              # Km au départ
+    kmFin = Column(Integer, nullable=True)       # Km au retour
+    montantTotal = Column(Float, nullable=True)  # Prix total calculé
+    
+    # Relations
+    car = relationship("Car", back_populates="rentals")
+    renter = relationship("Renter", back_populates="rentals")
+```
+
+---
+
+### 4. schemas.py - Schémas Pydantic
+
+Pydantic assure la **validation des données** et la **sérialisation**.
+
+#### Schémas Car
+```python
+class CarBase(BaseModel):
+    numImma: str
+    marque: str
+    modele: str
+    kilometrage: int = Field(ge=0)
+    prixLocation: float = Field(gt=0)
+    etat: int = Field(default=0, ge=0, le=1)
+
+class CarCreate(CarBase):
+    pass
+
+class CarUpdate(BaseModel):
+    numImma: Optional[str] = None
+    marque: Optional[str] = None
+    modele: Optional[str] = None
+    kilometrage: Optional[int] = Field(None, ge=0)
+    prixLocation: Optional[float] = Field(None, gt=0)
+    etat: Optional[int] = Field(None, ge=0, le=1)
+
+class CarResponse(CarBase):
+    id: int
+    createdAt: datetime
+    updatedAt: datetime
+    rentals: List[RentalBase] = []
+    
+    class Config:
+        from_attributes = True
+```
+
+#### Schémas Rental avec calcul du prix
+```python
+class RentalCreate(RentalBase):
+    dateDebut: Optional[str] = None
+    dateFin: Optional[str] = None      # Date de fin prévue
+    montantTotal: Optional[float] = None  # Prix pré-calculé
+```
+
+---
+
+### 5. crud.py - Opérations CRUD
+
+Fonctions pour interagir avec la base de données :
+
+```python
+# ===== CARS =====
+
+def get_cars(db: Session, skip: int = 0, limit: int = 100):
+    """Récupérer toutes les voitures"""
+    return db.query(models.Car).offset(skip).limit(limit).all()
+
+def get_car(db: Session, car_id: int):
+    """Récupérer une voiture par ID"""
+    return db.query(models.Car).filter(models.Car.id == car_id).first()
+
+def create_car(db: Session, car: schemas.CarCreate):
+    """Créer une nouvelle voiture"""
+    db_car = models.Car(**car.model_dump())
+    db.add(db_car)
+    db.commit()
+    db.refresh(db_car)
+    return db_car
+
+def update_car(db: Session, car_id: int, car: schemas.CarUpdate):
+    """Mettre à jour une voiture"""
+    db_car = get_car(db, car_id)
+    if db_car:
+        update_data = car.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_car, key, value)
+        db_car.updatedAt = datetime.utcnow()
+        db.commit()
+        db.refresh(db_car)
+    return db_car
+
+def delete_car(db: Session, car_id: int):
+    """Supprimer une voiture"""
+    db_car = get_car(db, car_id)
+    if db_car:
+        db.delete(db_car)
+        db.commit()
+    return db_car
+```
+
+#### Logique métier - Création de location
+```python
+def create_rental(db: Session, rental: schemas.RentalCreate):
+    """Créer une nouvelle location avec calcul automatique du prix"""
+    
+    # Récupérer la voiture
+    car = db.query(models.Car).filter(models.Car.id == rental.carId).first()
+    
+    # Calculer le montant si date de fin fournie
+    montant = None
+    if rental.dateFin and car:
+        date_debut = datetime.fromisoformat(rental.dateDebut) if rental.dateDebut else datetime.utcnow()
+        date_fin = datetime.fromisoformat(rental.dateFin)
+        jours = (date_fin - date_debut).days
+        if jours > 0:
+            montant = jours * car.prixLocation
+    
+    # Créer la location
+    db_rental = models.Rental(
+        carId=rental.carId,
+        renterId=rental.renterId,
+        kmDebut=rental.kmDebut,
+        montantTotal=montant or rental.montantTotal
+    )
+    
+    # Marquer la voiture comme louée
+    if car:
+        car.etat = 1
+    
+    db.add(db_rental)
+    db.commit()
+    db.refresh(db_rental)
+    return db_rental
+```
+
+---
+
+### 6. routers/ - Endpoints API
+
+#### routers/cars.py
+
+```python
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/cars", tags=["Cars"])
+
+@router.get("/", response_model=List[CarResponse])
+def read_cars(
+    skip: int = 0,
+    limit: int = 100,
+    available_only: bool = False,
+    db: Session = Depends(get_db)
+):
+    """Liste toutes les voitures"""
+    if available_only:
+        return crud.get_available_cars(db)
+    return crud.get_cars(db, skip=skip, limit=limit)
+
+@router.get("/{car_id}", response_model=CarResponse)
+def read_car(car_id: int, db: Session = Depends(get_db)):
+    """Récupère une voiture par son ID"""
+    db_car = crud.get_car(db, car_id=car_id)
+    if db_car is None:
+        raise HTTPException(status_code=404, detail="Car not found")
+    return db_car
+
+@router.post("/", response_model=CarResponse, status_code=201)
+def create_car(car: CarCreate, db: Session = Depends(get_db)):
+    """Crée une nouvelle voiture"""
+    return crud.create_car(db=db, car=car)
+
+@router.put("/{car_id}", response_model=CarResponse)
+def update_car(car_id: int, car: CarUpdate, db: Session = Depends(get_db)):
+    """Met à jour une voiture"""
+    db_car = crud.update_car(db, car_id=car_id, car=car)
+    if db_car is None:
+        raise HTTPException(status_code=404, detail="Car not found")
+    return db_car
+
+@router.delete("/{car_id}")
+def delete_car(car_id: int, db: Session = Depends(get_db)):
+    """Supprime une voiture"""
+    db_car = crud.delete_car(db, car_id=car_id)
+    if db_car is None:
+        raise HTTPException(status_code=404, detail="Car not found")
+    return {"message": "Car deleted successfully"}
+```
+
+---
+
+## 🚀 Démarrage
+
+### Option 1 : Avec run.py
+```bash
+cd backend
+python run.py
+```
+
+### Option 2 : Avec uvicorn
+```bash
+cd backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Option 3 : En production
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+---
+
+## 📖 Documentation API Interactive
+
+Une fois le serveur démarré :
+
+- **Swagger UI** : http://localhost:8000/docs
+- **ReDoc** : http://localhost:8000/redoc
+- **OpenAPI JSON** : http://localhost:8000/openapi.json
+
+---
+
+## 🧪 Test des Endpoints
+
+### Avec cURL
 
 ```bash
-curl -X POST "http://localhost:8000/cars" \
+# Health check
+curl http://localhost:8000/health
+
+# Liste des voitures
+curl http://localhost:8000/cars
+
+# Créer une voiture
+curl -X POST http://localhost:8000/cars \
   -H "Content-Type: application/json" \
   -d '{
-    "numImma": "ABC123",
+    "numImma": "123-TN-456",
     "marque": "Toyota",
     "modele": "Corolla",
     "kilometrage": 50000,
-    "etat": 0,
-    "prixLocation": 50.0
+    "prixLocation": 100.0
   }'
-```
 
-### Get All Available Cars
-
-```bash
-curl "http://localhost:8000/cars?available_only=true"
-```
-
-### Create a Rental
-
-```bash
-curl -X POST "http://localhost:8000/rentals" \
+# Modifier une voiture
+curl -X PUT http://localhost:8000/cars/1 \
   -H "Content-Type: application/json" \
-  -d '{
-    "carId": 1,
-    "renterId": 1,
-    "dateDebut": "2025-11-21T10:00:00",
-    "kmDebut": 50000
-  }'
+  -d '{"kilometrage": 55000}'
+
+# Supprimer une voiture
+curl -X DELETE http://localhost:8000/cars/1
 ```
 
-### Return a Car
+### Avec PowerShell
 
-```bash
-curl -X PUT "http://localhost:8000/rentals/1" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "dateFin": "2025-11-22T10:00:00",
-    "kmFin": 50200,
-    "montantTotal": 100.0
-  }'
+```powershell
+# Créer une voiture
+$body = @{
+    numImma = "TEST-123"
+    marque = "Ford"
+    modele = "Focus"
+    kilometrage = 25000
+    prixLocation = 80.0
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:8000/cars" -Method Post -Body $body -ContentType "application/json"
 ```
 
-## 🧪 Testing
+---
 
-You can test the API using:
+## 🔧 Variables d'Environnement
 
-1. **Swagger UI**: http://localhost:8000/docs (interactive testing)
-2. **curl**: Command line HTTP client
-3. **Postman**: API testing tool
-4. **httpie**: User-friendly command line HTTP client
+| Variable | Description | Valeur par défaut |
+|----------|-------------|-------------------|
+| `DATABASE_URL` | URL PostgreSQL | `postgresql://postgres:postgres@localhost:5432/cars-rental` |
 
-## 🔒 Security Features
+---
 
-- **Input Validation**: All inputs validated with Pydantic
-- **SQL Injection Protection**: Using SQLAlchemy ORM
-- **CORS Configuration**: Controlled cross-origin access
-- **Error Handling**: Comprehensive error responses
+## 📊 Diagramme de Séquence - Création de Location
 
-## 🐛 Troubleshooting
-
-### Database Issues
-
-If you encounter database errors:
-
-```bash
-# Delete the database and let it recreate
-rm ../prisma/dev.db
+```
+Client          FastAPI         CRUD           Database
+  |                |              |               |
+  |--POST /rentals-|              |               |
+  |                |--create_rental()             |
+  |                |              |--get car------|
+  |                |              |<--car data----|
+  |                |              |               |
+  |                |              |--calculate price
+  |                |              |               |
+  |                |              |--insert rental|
+  |                |              |<--rental id---|
+  |                |              |               |
+  |                |              |--update car---|
+  |                |              |   (etat=1)    |
+  |                |<--rental data|               |
+  |<--201 Created--|              |               |
 ```
 
-### Port Already in Use
+---
 
-If port 8000 is busy:
+## 🛡 Gestion des Erreurs
 
-```bash
-# Use a different port
-uvicorn backend.main:app --reload --port 8001
+```python
+# Erreurs HTTP standard
+raise HTTPException(status_code=404, detail="Car not found")
+raise HTTPException(status_code=400, detail="Invalid data")
+raise HTTPException(status_code=409, detail="Car already rented")
+
+# Gestionnaire global d'erreurs
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error", "message": str(exc)}
+    )
 ```
-
-### Module Not Found
-
-Make sure you're running from the project root:
-
-```bash
-# Run from: cars-rental/
-python -m backend.main
-```
-
-## 📝 Development Tips
-
-- Use the interactive docs at `/docs` for testing
-- Check the database with Prisma Studio: `npm run db:studio`
-- Enable debug mode for detailed error messages
-- Use virtual environments to avoid dependency conflicts
-
-## 🤝 Integration with Frontend
-
-The backend is configured to work with the Next.js frontend running on:
-- http://localhost:3000
-- http://localhost:3001
-
-CORS is pre-configured for these origins.
-
-## 📄 License
-
-This project is part of a car rental management system.
-
-## 👨‍💻 Author
-
-Built with FastAPI, SQLAlchemy, and Pydantic.
-
-
-
-
-
-
-

@@ -94,6 +94,8 @@ class RentalBase(BaseModel):
 class RentalCreate(RentalBase):
     """Schema for creating a new rental"""
     dateDebut: Optional[str] = None  # ISO format string
+    dateFin: Optional[str] = None  # ISO format string - planned end date
+    montantTotal: Optional[float] = None  # Pre-calculated total amount
 
 
 class RentalUpdate(BaseModel):
