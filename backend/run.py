@@ -7,10 +7,10 @@ import sys
 import os
 
 if __name__ == "__main__":
-    print("🚀 Starting Car Rental Management API...")
-    print("📚 API Documentation: http://localhost:8000/docs")
-    print("📖 ReDoc: http://localhost:8000/redoc")
-    print("🔄 Auto-reload enabled for development")
+    print(" Starting Car Rental Management API...")
+    print(" API Documentation: http://localhost:8000/docs")
+    print(" ReDoc: http://localhost:8000/redoc")
+    print(" Auto-reload enabled for development")
     print("\nPress CTRL+C to stop the server\n")
     
     # Check if we're in the backend directory, if so, go up one level
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if current_dir == "backend":
         # We're in backend directory, need to go up
         os.chdir("..")
-        print("📁 Changed directory to project root\n")
+        print(" Changed directory to project root\n")
     
     # Add project root to Python path
     sys.path.insert(0, os.getcwd())

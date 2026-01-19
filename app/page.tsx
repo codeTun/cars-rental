@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { carsAPI, rentersAPI, rentalsAPI } from '@/lib/api-client'
+import { RevenueChart, CarStatusChart, RentalsTrendChart } from '@/components/DashboardCharts'
 
 export default async function HomePage() {
   // Fetch data from API
@@ -72,90 +73,128 @@ export default async function HomePage() {
       value: totalCars,
       description: `${availableCars} disponibles, ${rentedCars} louées`,
       href: '/cars',
-      color: 'from-blue-500 to-blue-600'
+      color: 'from-blue-500 to-blue-600',
+      icon: '🚗'
     },
     {
       title: 'Total Locataires',
       value: renters.length,
       description: `${rentersWithActiveRentals} en location`,
       href: '/renters',
-      color: 'from-purple-500 to-purple-600'
+      color: 'from-purple-500 to-purple-600',
+      icon: '👥'
     },
     {
       title: 'Locations Actives',
       value: activeRentals,
       description: 'En cours',
       href: '/rentals',
-      color: 'from-green-500 to-green-600'
+      color: 'from-orange-500 to-orange-600',
+      icon: '📋'
     },
     {
       title: 'Revenus Total',
       value: `${totalRevenue.toFixed(2)} DT`,
       description: `${rentalsWithRevenue.length} locations payées`,
       href: '/rentals',
-      color: 'from-emerald-500 to-emerald-600'
+      color: 'from-emerald-500 to-emerald-600',
+      icon: '💰'
     }
   ]
 
   const revenueStats = [
-    { period: "Aujourd'hui", amount: todayRevenue, icon: '📅' },
-    { period: 'Cette Semaine', amount: thisWeekRevenue, icon: '📊' },
-    { period: 'Ce Mois', amount: thisMonthRevenue, icon: '📈' }
+    { period: "Aujourd'hui", amount: todayRevenue, icon: '📅', color: 'from-blue-50 to-blue-100', borderColor: 'border-blue-200', textColor: 'text-blue-700' },
+    { period: 'Cette Semaine', amount: thisWeekRevenue, icon: '📊', color: 'from-purple-50 to-purple-100', borderColor: 'border-purple-200', textColor: 'text-purple-700' },
+    { period: 'Ce Mois', amount: thisMonthRevenue, icon: '📈', color: 'from-emerald-50 to-emerald-100', borderColor: 'border-emerald-200', textColor: 'text-emerald-700' }
   ]
 
+  // Prepare data for charts
+  const chartRentals = rentals.map(r => ({
+    dateDebut: r.dateDebut,
+    montantTotal: r.montantTotal
+  }))
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Gestion de Location de Voitures</h1>
-          <p className="mt-1 text-sm text-gray-500">Gérez votre entreprise de location de voitures efficacement</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Tableau de Bord
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">Gérez votre entreprise de location de voitures</p>
+            </div>
+            <div className="hidden md:flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-full">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="text-sm font-medium text-green-700">Système Actif</span>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
             <Link
               key={stat.title}
               href={stat.href}
-              className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
               <div className="relative">
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stat.value}</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <span className="text-2xl">{stat.icon}</span>
+                </div>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
                 <p className="mt-2 text-xs text-gray-500">{stat.description}</p>
               </div>
+              <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
             </Link>
           ))}
         </div>
 
         {/* Revenue Stats Section */}
-        <div className="bg-white rounded-2xl shadow-md p-8 mb-8" id="revenue-section">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">💰 Revenus par Période</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100" id="revenue-section">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">💰 Revenus par Période</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {revenueStats.map((stat) => (
-              <div key={stat.period} className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-3xl">{stat.icon}</span>
-                  <span className="text-sm font-medium text-green-700">{stat.period}</span>
+              <div key={stat.period} className={`bg-gradient-to-br ${stat.color} rounded-xl p-5 border-2 ${stat.borderColor} hover:shadow-md transition-shadow`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-2xl">{stat.icon}</span>
+                  <span className={`text-sm font-medium ${stat.textColor}`}>{stat.period}</span>
                 </div>
-                <p className="text-3xl font-bold text-green-900">{stat.amount.toFixed(2)} DT</p>
-                <p className="text-sm text-green-600 mt-1">Bénéfices générés</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.amount.toFixed(2)} DT</p>
+                <p className="text-xs text-gray-600 mt-1">Bénéfices générés</p>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Revenue Bar Chart */}
+          <RevenueChart rentals={chartRentals} />
+          
+          {/* Car Status Pie Chart */}
+          <CarStatusChart available={availableCars} rented={rentedCars} />
+        </div>
+
+        {/* Rentals Trend Chart - Full Width */}
+        <div className="mb-8">
+          <RentalsTrendChart rentals={chartRentals} />
+        </div>
+
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl shadow-md p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
+        <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">⚡ Actions Rapides</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/cars"
-              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-lg font-medium"
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -165,7 +204,7 @@ export default async function HomePage() {
             
             <Link
               href="/renters"
-              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 hover:shadow-lg font-medium"
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -174,13 +213,13 @@ export default async function HomePage() {
             </Link>
             
             <Link
-              href="/rentals"
-              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:shadow-lg font-medium"
+              href="/rentals/new"
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              Gérer les Locations
+              Nouvelle Location
             </Link>
           </div>
         </div>
