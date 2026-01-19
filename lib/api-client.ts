@@ -76,6 +76,7 @@ async function apiFetch<T>(
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
+      cache: 'no-store', // Disable caching to always fetch fresh data
       headers: {
         'Content-Type': 'application/json',
         ...options?.headers,
